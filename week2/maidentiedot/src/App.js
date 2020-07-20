@@ -23,7 +23,7 @@ const App = () => {
   return (
     <div>
       find countries <input onChange={handleFilterChange} />
-      <Countries countries={countries} filterName={filterName}/>
+      <Countries countries={countries} filterName={filterName} setFilterName = {setFilterName}/>
     </div>
   )
 }
@@ -45,6 +45,9 @@ const Countries = (props) => {
       countriesToShow.map((country, i) =>
       <div key={country.alpha2Code}>
         {country.name}
+        <button onClick={() => props.setFilterName(country.name.toLowerCase())}>
+          show
+        </button>
       </div>
       )
     )
