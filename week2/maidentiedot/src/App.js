@@ -4,6 +4,7 @@ import axios from "axios";
 const App = () => {
   const [countries, setCountries] = useState([])
   const [filterName, setFilterName] = useState('')
+  const [weather, setWeather] = useState([])
 
   useEffect(() => {
     axios.get("https://restcountries.eu/rest/v2/all").then(response => {
@@ -23,7 +24,12 @@ const App = () => {
   return (
     <div>
       find countries <input onChange={handleFilterChange} />
-      <Countries countries={countries} filterName={filterName} setFilterName = {setFilterName}/>
+      <Countries 
+      countries={countries} 
+      filterName={filterName} 
+      setFilterName={setFilterName} 
+      weather = {weather}
+      setWeather = {setWeather}/>
     </div>
   )
 }
@@ -43,33 +49,57 @@ const Countries = (props) => {
   } else if (countriesToShow.length > 1) {
     return (
       countriesToShow.map((country, i) =>
-      <div key={country.alpha2Code}>
-        {country.name}
-        <button onClick={() => props.setFilterName(country.name.toLowerCase())}>
-          show
+        <div key={country.alpha2Code}>
+          {country.name}
+          <button onClick={() => props.setFilterName(country.name.toLowerCase())}>
+            show
         </button>
-      </div>
+        </div>
       )
     )
   } else {
     return (
       countriesToShow.map((country, i) =>
-      <div key={country.alpha2Code}>
-        <h1>{country.name}</h1>
-        <p>capital {country.capital}</p>
-        <p>population {country.population}</p>
-        <h3>languages</h3>
-        <ul>
-        {country.languages.map(l => (
-          <li key={l.name}>{l.name}</li>
-        ))}
-        </ul>
-
-        <img src={country.flag} alt="flag" width="150" />
-      </div>
+        <div key={country.alpha2Code}>
+          <h1>{country.name}</h1>
+          <p>capital {country.capital}</p>
+          <p>population {country.population}</p>
+          <h3>languages</h3>
+          <ul>
+            {country.languages.map(l => (
+              <li key={l.name}>{l.name}</li>
+            ))}
+          </ul>
+          <img src={country.flag} alt="flag" width="150" />
+          <h3>Weather in {country.name}</h3>
+          <p>temperature {}</p>
+          <Weather 
+          capital={country.capital.toLowerCase()} 
+          setWeather = {props.setWeather} 
+          weather = {props.weather}/>
+        </div>
       )
     )
   }
+}
+
+const Weather = (props) => {
+  const api_key = process.env.REACT_APP_API_KEY
+  const weatherApi = 'api.openweathermap.org/data/2.5/weather?q='
+    + props.capital + '&appid=' + api_key
+
+  console.log(weatherApi);
+  useEffect(() => {
+    axios.get(weatherApi).then(response => {
+      props.setWeather(response.data)
+    });
+  });
+  
+  return (
+    <div>
+       {props.weather.main.length}
+    </div>
+  )
 }
 
 export default App
