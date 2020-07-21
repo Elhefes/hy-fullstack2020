@@ -7,6 +7,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [showAll, setShowAll] = useState(true);
   const [filterName, setFilterName] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -22,8 +23,17 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personService
         .deletePerson(id)
-        .then(setPersons(persons.filter(n => n.id !== id)));
-    }
+        .then(response => {
+          setPersons(persons.filter(n => n.id !== id));
+        })
+        .catch(error => {
+          setMessage(
+            `Information of ${newName} has already been removed from the server.`
+          )
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        }) }
   };
 
   const addPerson = (event) => {
@@ -41,7 +51,22 @@ const App = () => {
           .then(returnedName => {
             setPersons(persons.map(name => name.id !== person.id ? name : returnedName))
           })
+          .catch(error => {
+            setMessage(
+              `Updating ${newName}'s number failed.`
+            )
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })        
       }
+
+      setMessage(
+        `Changed ${newName}'s number to ${newNumber}`
+      )
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     } else {
       const personObject = {
         name: newName,
@@ -54,8 +79,23 @@ const App = () => {
         setPersons(persons.concat(response.data))
         setNewName('')
       })
+      .catch(error => {
+        setMessage(
+          `Adding ${newName} failed.`
+        )
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })  
 
       setPersons(persons.concat(personObject))
+
+      setMessage(
+        `Added ${newName}`
+      )
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
     setNewName('')
     setNewNumber('')
@@ -81,6 +121,8 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={message} />
+
       <h2>Phonebook</h2>
       <Filter filterName={filterName} handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
@@ -147,5 +189,18 @@ const Numbers = (props) => {
     )
   )
 }
+
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="error">
+      {message}
+    </div>
+  )
+}
+
 
 export default App
