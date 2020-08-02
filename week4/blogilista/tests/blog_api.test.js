@@ -45,6 +45,13 @@ const blogWithoutLikes = {
   __v: 0
 }
 
+const blogWithoutTitleAndUrl = {
+  _id: "5a422bc61b54a676234d17fc",
+  author: "Robert C. Martin",
+  likes: 2,
+  __v: 0
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -98,8 +105,15 @@ describe('when posting a blog', () => {
       .send(blogWithoutLikes)
       .expect(201)
       .expect('Content-Type', /application\/json/)
-      const response = await api.get(`/api/blogs/${blogWithoutLikes._id}`)
+    const response = await api.get(`/api/blogs/${blogWithoutLikes._id}`)
     expect(response.body.likes).toBe(0)
+  })
+
+  test('blog without title returns error 400', async () => {
+    await api
+      .post('/api/blogs')
+      .send(blogWithoutTitleAndUrl)
+      .expect(400)
   })
 })
 
