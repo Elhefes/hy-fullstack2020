@@ -4,6 +4,7 @@ const app = express()
 const cors = require('cors')
 const blogRouter = require('./controllers/blogs')
 const mongoose = require('mongoose')
+const usersRouter = require('./controllers/users')
 
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -16,7 +17,7 @@ mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology
 app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
-
+app.use('/api/users', usersRouter)
 app.use('/api/blogs', blogRouter)
 
 module.exports = app

@@ -31,20 +31,13 @@ blogRouter.post('/', async (request, response) => {
 
 blogRouter.delete('/:id', async (request, response, next) => {
   await Blog.findByIdAndRemove(request.params.id)
-    .then(() => {
-      response.status(204).end()
-    })
-    .catch(error => next(error))
+  response.status(204).end()
 })
 
 blogRouter.put('/:id', async (request, response, next) => {
   const blog = new Blog(request.body)
   await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-    .then(() => {
-      response.status(204).end()
-    })
-    .catch(error => next(error))
-
+  response.status(200).json(result.toJSON())
 })
 
 
