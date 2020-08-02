@@ -37,6 +37,14 @@ const blog = {
   __v: 0
 }
 
+const blogWithoutLikes = {
+  _id: "5a422b891b54a676234d17fa",
+  title: "First class tests",
+  author: "Robert C. Martin",
+  url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
+  __v: 0
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -82,6 +90,16 @@ describe('when posting a blog', () => {
       .expect('Content-Type', /application\/json/)
     const response = await api.get('/api/blogs')
     expect(response.body.length).toBe(initialBlogs.length + 1)
+  })
+
+  test('blog without likes has 0 likes', async () => {
+    await api
+      .post('/api/blogs')
+      .send(blogWithoutLikes)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+      const response = await api.get(`/api/blogs/${blogWithoutLikes._id}`)
+    expect(response.body.likes).toBe(0)
   })
 })
 
