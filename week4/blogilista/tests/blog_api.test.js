@@ -28,6 +28,15 @@ const initialBlogs = [{
   __v: 0
 }]
 
+const blog = {
+  _id: "5a422ba71b54a676234d17fb",
+  title: "TDD harms architecture",
+  author: "Robert C. Martin",
+  url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+  likes: 0,
+  __v: 0
+}
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -62,6 +71,18 @@ describe('getting blogs from database; ', () => {
 
   })
 
+})
+
+describe('when posting a blog', () => {
+  test('blog count increases', async () => {
+    await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+    const response = await api.get('/api/blogs')
+    expect(response.body.length).toBe(initialBlogs.length + 1)
+  })
 })
 
 afterAll(() => {
