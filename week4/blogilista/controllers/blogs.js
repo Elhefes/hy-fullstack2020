@@ -20,7 +20,11 @@ blogRouter.get('/', async (request, response) => {
 
 blogRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
-  response.json(blog)
+  if (blog) {
+    response.json(blog.toJSON())
+  } else {
+    response.status(404).end()
+  }
 })
 
 blogRouter.post('/', async (request, response) => {
@@ -42,7 +46,7 @@ blogRouter.post('/', async (request, response) => {
     user: user._id
   })
 
-  if (blog.likes == null) {
+  if (blog.likes === undefined) {
     blog.likes = 0
   }
 
@@ -53,7 +57,6 @@ blogRouter.post('/', async (request, response) => {
   const result = await blog.save()
   user.blogs = user.blogs.concat(result._id)
   await user.save()
-
   response.json(result.toJSON())
 })
 

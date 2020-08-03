@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-
-const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const api = supertest(app)
 
 const initialBlogs = [{
   id: "5a422a851b54a676234d17f7",
@@ -52,6 +52,8 @@ const blogWithoutTitleAndUrl = {
   __v: 0
 }
 
+let token
+
 beforeEach(async () => {
   await Blog.deleteMany({})
 
@@ -63,6 +65,31 @@ beforeEach(async () => {
 
   blogObject = new Blog(initialBlogs[2])
   await blogObject.save()
+
+  await User.deleteMany({})
+  const user = {
+    username: 'testuser',
+    password: 'testpassword',
+    name: "test user"
+  }
+
+  const userLogin = {
+    username: 'testuser',
+    password: 'testpassword'
+  }
+
+  await api
+    .post('/api/users')
+    .send(user)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const login = await api
+    .post('/api/login')
+    .send(userLogin)
+    .expect(200).expect('Content-Type', /application\/json/)
+
+  token = login.body.token
 })
 
 describe('getting blogs from database; ', () => {
@@ -90,10 +117,12 @@ describe('getting blogs from database; ', () => {
 
 describe('when posting a blog', () => {
   test('blog count increases', async () => {
+    console.log("TOKEN IS HERE: " + token)
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(blog)
-      .expect(201)
+      .expect(200)
       .expect('Content-Type', /application\/json/)
     const response = await api.get('/api/blogs')
     expect(response.body.length).toBe(initialBlogs.length + 1)
@@ -102,16 +131,20 @@ describe('when posting a blog', () => {
   test('blog without likes has 0 likes', async () => {
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(blogWithoutLikes)
-      .expect(201)
+      .expect(200)
       .expect('Content-Type', /application\/json/)
-    const response = await api.get(`/api/blogs/${blogWithoutLikes._id}`)
-    expect(response.body.likes).toBe(0)
+
+    const response = await api.get('/api/blogs')
+      .expect('Content-Type', /application\/json/)
+    expect(response.body[3].likes).toBe(0)
   })
 
   test('blog without title returns error 400', async () => {
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(blogWithoutTitleAndUrl)
       .expect(400)
   })
