@@ -4,7 +4,7 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import './App.css'
 import BlogForm from './components/BlogForm'
-import Togglable from './components/Togglable';
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -53,7 +53,7 @@ const App = () => {
     }
   }
 
-  const handleLogout = async (event) => {
+  const handleLogout = async () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
   }
@@ -88,7 +88,7 @@ const App = () => {
         blogService.remove(blog.id)
         setBlogs(blogs.filter(b => b.id !== blog.id))
       } catch (exception) {
-        console.log(exception);
+        console.log(exception)
       }
     }
   }
@@ -98,7 +98,7 @@ const App = () => {
       const likedBlog = await blogService.like(blog)
       setBlogs(blogs.map(b => b.id !== blog.id ? b : likedBlog))
     } catch (exception) {
-      console.log(exception);
+      console.log(exception)
     }
   }
 
@@ -121,7 +121,7 @@ const App = () => {
         <form onSubmit={handleLogin}>
           <div>
             username
-          <input
+            <input
               type="text"
               value={username}
               name="Username"
@@ -130,7 +130,7 @@ const App = () => {
           </div>
           <div>
             password
-          <input
+            <input
               type="password"
               value={password}
               name="Password"
@@ -162,7 +162,7 @@ const App = () => {
       </Togglable>
 
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} likeBlog={() => likeBlog(blog)} removeBlog={removeBlog} user = {user}/>
+        <Blog key={blog.id} blog={blog} likeBlog={() => likeBlog(blog)} removeBlog={removeBlog} user={user} />
       )}
     </div>
   )

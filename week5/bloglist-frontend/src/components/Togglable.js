@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-const Togglable = React.forwardRef((props, ref) => {
+const Togglable = React.forwardRef((props) => {
   const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -24,6 +24,7 @@ const Togglable = React.forwardRef((props, ref) => {
   )
 })
 
+Togglable.displayName = 'Togglable'
 Togglable.propTypes = {
   buttonLabel: PropTypes.string.isRequired
 }
