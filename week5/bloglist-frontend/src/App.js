@@ -82,12 +82,23 @@ const App = () => {
     }, 5000)
   }
 
+  const removeBlog = async blog => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      try {
+        blogService.remove(blog.id)
+        setBlogs(blogs.filter(b => b.id !== blog.id))
+      } catch (exception) {
+        console.log(exception);
+      }
+    }
+  }
+
   const likeBlog = async (blog) => {
     try {
       const likedBlog = await blogService.like(blog)
       setBlogs(blogs.map(b => b.id !== blog.id ? b : likedBlog))
     } catch (exception) {
-        console.log(exception);
+      console.log(exception);
     }
   }
 
@@ -151,7 +162,7 @@ const App = () => {
       </Togglable>
 
       {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} likeBlog={() => likeBlog(blog)} />
+        <Blog key={blog.id} blog={blog} likeBlog={() => likeBlog(blog)} removeBlog={removeBlog} user = {user}/>
       )}
     </div>
   )
