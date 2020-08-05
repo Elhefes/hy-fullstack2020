@@ -15,7 +15,6 @@ const App = () => {
   const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
-  const [blogFormVisible, setblogFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -28,7 +27,6 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
-      //blogService.setToken(user.token)
     }
   }, [])
 
@@ -82,6 +80,15 @@ const App = () => {
     setTimeout(() => {
       setErrorMessage(null)
     }, 5000)
+  }
+
+  const likeBlog = async (blog) => {
+    try {
+      const likedBlog = await blogService.like(blog)
+      setBlogs(blogs.map(b => b.id !== blog.id ? b : likedBlog))
+    } catch (exception) {
+        console.log(exception);
+    }
   }
 
   const Notification = ({ message }) => {
@@ -144,7 +151,7 @@ const App = () => {
       </Togglable>
 
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} likeBlog={() => likeBlog(blog)} />
       )}
     </div>
   )
