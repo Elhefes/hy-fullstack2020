@@ -71,5 +71,30 @@ describe('Blog app', function () {
         cy.get('html').should('not.contain', 'Cypress Test Blog')
       })
     })
+
+    it('Blogs are sorted by number of likes', function() {
+      cy.createBlog({
+        title: 'Cypress Test Blog 1',
+        author: 'Cypress Test Author 1',
+        url: 'Cypress Test Url 1',
+        likes: '100',
+      })
+      cy.createBlog({
+        title: 'Cypress Test Blog 2',
+        author: 'Cypress Test Author 2',
+        url: 'Cypress Test Url 2',
+        likes: '1000',
+      })
+      cy.createBlog({
+        title: 'Cypress Test Blog 3',
+        author: 'Cypress Test Author 3',
+        url: 'Cypress Test Url 3',
+        likes: '10',
+      })
+
+      cy.get('#toggle-visibility').click()
+
+      cy.get('.blog').first().contains('Cypress Test Blog 2');
+    })
   })
 })
