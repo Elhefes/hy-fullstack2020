@@ -1,3 +1,5 @@
+import { func } from "prop-types"
+
 describe('Blog app', function () {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3001/api/testing/reset')
@@ -32,21 +34,36 @@ describe('Blog app', function () {
     })
   })
 
-  describe.only('When logged in', function() {
-    beforeEach(function() {
-      cy.get('#username').type('testUser')
-      cy.get('#password').type('testPassword')
-      cy.get('#login-button').click()
+  describe.only('When logged in', function () {
+    beforeEach(function () {
+      cy.login({ username: 'testUser', password: 'testPassword' })
     })
 
-    it('A blog can be created', function() {
+    it('A blog can be created', function () {
       cy.get('#new-note').click()
 
       cy.get('#title').type('testTitle')
       cy.get('#author').type('testAuthor')
       cy.get('#url').type('testurl.com')
       cy.get('#create').click()
-      cy.contains('testTitle testAuthor')
+      cy.contains('a new blog testTitle by testAuthor')
+    })
+
+    describe('and a blog exists', function () {
+      beforeEach(function () {
+        cy.createBlog({
+          title: 'Cypress Test Blog',
+          author: 'Cypress Test Author',
+          url: 'Cypress Test Url',
+          likes: '0',
+        })
+      })
+
+      it('the blog can be liked', function () {
+        cy.get('#toggle-visibility').click()
+        cy.contains('Cypress Test Blog').get('#like').click()
+        cy.contains('likes 1')
+      })
     })
   })
 })
