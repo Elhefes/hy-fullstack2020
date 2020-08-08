@@ -64,6 +64,12 @@ describe('Blog app', function () {
         cy.contains('Cypress Test Blog').get('#like').click()
         cy.contains('likes 1')
       })
+
+      it('the blog can be removed', function () {
+        cy.get('#toggle-visibility').click()
+        cy.get('#delete').click()
+        cy.get('html').should('not.contain', 'Cypress Test Blog')
+      })
     })
   })
 })
