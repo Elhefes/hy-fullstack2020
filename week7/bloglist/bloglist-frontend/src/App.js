@@ -9,6 +9,7 @@ import loginService from './services/login'
 import storage from './utils/storage'
 
 import { setNotification } from './reducers/notificationReducer'
+import {initializeBlogs, createBlog} from './reducers/blogReducer'
 import { connect } from 'react-redux'
 
 const App = (props) => {
@@ -50,10 +51,8 @@ const App = (props) => {
 
   const createBlog = async (blog) => {
     try {
-      const newBlog = await blogService.create(blog)
-      blogFormRef.current.toggleVisibility()
-      setBlogs(blogs.concat(newBlog))
-      props.setNotification({message: `a new blog '${newBlog.title}' by ${newBlog.author} added!`, duration: 4})
+      props.createBlog(blog)
+      props.setNotification({message: `a new blog '${blog.title}' by ${blog.author} added!`, duration: 4})
     } catch(exception) {
       console.log(exception)
     }
@@ -141,12 +140,15 @@ const App = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    notification: state.notification
+    notification: state.notification,
+    blogs: state.blogs
   }
 }
 
 const mapDispatchToProps = {
-  setNotification
+  setNotification,
+  initializeBlogs,
+  createBlog
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
