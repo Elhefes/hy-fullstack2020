@@ -22,7 +22,7 @@ const App = (props) => {
 
   useEffect(() => {
     dispatch(initializeBlogs())
-  }, [])
+  }, [dispatch])
 
   const blogs = useSelector(state => state.blogs.sort((a,b)=>b.likes-a.likes))
 

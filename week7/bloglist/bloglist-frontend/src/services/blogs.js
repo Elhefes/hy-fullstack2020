@@ -23,8 +23,8 @@ const update = async (id, newBlog) => {
   console.log('1')
   console.log(newBlog)
   console.log('2')
-  const request = axios.put(`${baseUrl}/${id}`, newBlog, getConfig())
-  return request
+  const response = await axios.put(`${baseUrl}/${id}`, newBlog, getConfig());
+  return response.data;
 }
 
 const remove = (id) => {
