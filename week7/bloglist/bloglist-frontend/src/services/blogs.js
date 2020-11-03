@@ -19,9 +19,12 @@ const create = (blog) => {
   return request.then(response => response.data)
 }
 
-const update = (blog) => {
-  const request = axios.put(`${baseUrl}/${blog.id}`, blog, getConfig())
-  return request.then(response => response.data)
+const update = async (id, newBlog) => {
+  console.log('1')
+  console.log(newBlog)
+  console.log('2')
+  const request = axios.put(`${baseUrl}/${id}`, newBlog, getConfig())
+  return request
 }
 
 const remove = (id) => {

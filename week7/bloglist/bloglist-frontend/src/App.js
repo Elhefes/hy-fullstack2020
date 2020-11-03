@@ -9,11 +9,11 @@ import loginService from './services/login'
 import storage from './utils/storage'
 
 import { setNotification } from './reducers/notificationReducer'
-import {initializeBlogs, createBlog} from './reducers/blogReducer'
-import { connect } from 'react-redux'
+import {initializeBlogs, createBlog, likeBlog, removeBlog } from './reducers/blogReducer'
+import {  useDispatch, useSelector, connect } from 'react-redux'
 
 const App = (props) => {
-  const [blogs, setBlogs] = useState([])
+  const dispatch = useDispatch()
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -21,10 +21,10 @@ const App = (props) => {
   const blogFormRef = React.createRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    dispatch(initializeBlogs())
   }, [])
+
+  const blogs = useSelector(state => state.blogs.sort((a,b)=>b.likes-a.likes))
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -37,6 +37,10 @@ const App = (props) => {
       const user = await loginService.login({
         username, password
       })
+
+      window.localStorage.setItem(
+        'loggedBlogappUser', JSON.stringify(user)
+      )
 
       setUsername('')
       setPassword('')
@@ -58,20 +62,17 @@ const App = (props) => {
     }
   }
 
-  const handleLike = async (id) => {
-    const blogToLike = blogs.find(b => b.id === id)
-    const likedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user.id }
-    await blogService.update(likedBlog)
-    setBlogs(blogs.map(b => b.id === id ?  { ...blogToLike, likes: blogToLike.likes + 1 } : b))
+  const handleLike = (id) => {
+    try {
+      const blogToLike = blogs.find(b => b.id === id)
+      props.likeBlog(blogToLike)
+    } catch (exception) {
+      console.log(exception)
+    }
   }
 
   const handleRemove = async (id) => {
-    const blogToRemove = blogs.find(b => b.id === id)
-    const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
-    if (ok) {
-      await blogService.remove(id)
-      setBlogs(blogs.filter(b => b.id !== id))
-    }
+    props.removeBlog(id)
   }
 
   const handleLogout = () => {
@@ -148,7 +149,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   setNotification,
   initializeBlogs,
-  createBlog
+  createBlog,
+  likeBlog,
+  removeBlog
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
