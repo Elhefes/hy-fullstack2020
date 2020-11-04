@@ -6,12 +6,15 @@ import Togglable from './components/Togglable'
 import NewBlog from './components/NewBlog'
 import Users from './components/Users'
 import User from './components/User'
+import { TextField } from '@material-ui/core'
+
 import {
   Switch, Route, Link, useParams, useRouteMatch
 } from "react-router-dom"
 import loginService from './services/login'
 import storage from './utils/storage'
 
+import styled from 'styled-components'
 import { setNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, likeBlog, removeBlog } from './reducers/blogReducer'
 import { useDispatch, useSelector, connect } from 'react-redux'
@@ -97,18 +100,15 @@ const App = (props) => {
 
         <form onSubmit={handleLogin}>
           <div>
-            username
-            <input
-              id='username'
-              value={username}
+            <TextField
+              label="username"
               onChange={({ target }) => setUsername(target.value)}
             />
           </div>
           <div>
-            password
-            <input
-              id='password'
-              value={password}
+            <TextField
+              label="username"
+              type="password"
               onChange={({ target }) => setPassword(target.value)}
             />
           </div>
@@ -125,41 +125,73 @@ const App = (props) => {
   }
 
   return (
-    <div class = "container">
+    <div class="container">
       <div>
-        <Link style={{ padding: 5 }} to="/">blogs</Link>
-        <Link style={{ padding: 5 }} to="/users">users</Link>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
+        <Navigation>
+          <Link style={{ padding: 5 }} to="/">blogs</Link>
+          <Link style={{ padding: 5 }} to="/users">users</Link>
+          {user.name} logged in <button onClick={handleLogout}>logout</button>
+        </Navigation>
       </div>
-      <h2>blog app</h2>
+      <Page>
+        <h2>blog app</h2>
+        <Notification />
+        <Switch>
+          <Route path="/blogs/:id">
+            <Blog blog={blog} />
+          </Route>
+          <Route path="/users/:id">
+            <User user={matchUser} />
+          </Route>
+          <Route path="/users">
+            <Users />
+          </Route>
+          <Route path="/">
+            <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+              <NewBlog createBlog={createBlog} />
+            </Togglable>
 
-      <Notification />
-      <Switch>
-        <Route path="/blogs/:id">
-          <Blog blog={blog} />
-        </Route>
-        <Route path="/users/:id">
-          <User user={matchUser} />
-        </Route>
-        <Route path="/users">
-          <Users />
-        </Route>
-        <Route path="/">
-          <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-            <NewBlog createBlog={createBlog} />
-          </Togglable>
-
-          {blogs.sort(byLikes).map(blog =>
-            <Blogs
-              key={blog.id}
-              blog={blog}
-            />
-          )}
-        </Route>
-      </Switch>
+            {blogs.sort(byLikes).map(blog =>
+              <Blogs
+                key={blog.id}
+                blog={blog}
+              />
+            )}
+          </Route>
+        </Switch>
+      </Page>
     </div>
   )
 }
+
+const Button = styled.button`
+  background: Bisque;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.25em 1em;
+  border: 2px solid Chocolate;
+  border-radius: 3px;
+`
+
+const Input = styled.input`
+  margin: 0.25em;
+`
+
+const Page = styled.div`
+  padding: 1em;
+  background: papayawhip;
+`
+
+const Navigation = styled.div`
+  background: BurlyWood;
+  padding: 1em;
+`
+
+const Footer = styled.div`
+  background: Chocolate;
+  padding: 1em;
+  margin-top: 1em;
+`
 
 const mapStateToProps = (state) => {
   return {
