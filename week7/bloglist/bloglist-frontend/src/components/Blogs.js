@@ -1,10 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import {
-  BrowserRouter as Router,
-  Switch, Route, Link
-} from "react-router-dom"
-
+import { Link } from "react-router-dom"
 
 const Blogs = ({ blog }) => {
   if (!blog) {
@@ -22,7 +18,7 @@ const Blogs = ({ blog }) => {
   return (
     <div style={blogStyle} className='blog'>
       <div>
-        <Link to={`/blogs/${blog.id}`}><i>{blog.title}</i></Link>
+        <Link to={`/blogs/${blog.id}`}><i>{blog.title} {blog.author}</i></Link>
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import NewBlog from './components/NewBlog'
 import Users from './components/Users'
+import User from './components/User'
 import {
   Switch, Route, Link, useParams, useRouteMatch
 } from "react-router-dom"
@@ -33,6 +34,8 @@ const App = (props) => {
   }, [])
 
   const blogs = useSelector(state => state.blogs.sort((a, b) => b.likes - a.likes))
+
+  const users = useSelector(state => state.users)
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -75,9 +78,14 @@ const App = (props) => {
     storage.logoutUser()
   }
 
-  const match = useRouteMatch('/blogs/:id')
-  const blog = match
-    ? blogs.find(blog => blog.id === Number(match.params.id))
+  const blogMatch = useRouteMatch('/blogs/:id')
+  const blog = blogMatch
+    ? blogs.find((blog) => blog.id === blogMatch.params.id)
+    : null
+
+  const userMatch = useRouteMatch('/users/:id')
+  const matchUser = userMatch
+    ? users.find((matchUser) => matchUser.id === userMatch.params.id)
     : null
 
   if (!user) {
@@ -117,38 +125,38 @@ const App = (props) => {
   }
 
   return (
-    <div>
+    <div class = "container">
       <div>
-          <Link style={{ padding: 5 }} to="/">blogs</Link>
-          <Link style={{ padding: 5 }} to="/users">users</Link>
-          {user.name} logged in <button onClick={handleLogout}>logout</button>
-        </div>
+        <Link style={{ padding: 5 }} to="/">blogs</Link>
+        <Link style={{ padding: 5 }} to="/users">users</Link>
+        {user.name} logged in <button onClick={handleLogout}>logout</button>
+      </div>
       <h2>blog app</h2>
 
       <Notification />
-        <Switch>
-          <Route path="/blogs/:id">
-            <Blog blog = {blog}/>
-          </Route>
-          <Route path="/users/:id">
-            akwfpkawfpkawf
-          </Route>
-          <Route path="/users">
-            <Users />
-          </Route>
-          <Route path="/">
-            <Togglable buttonLabel='create new blog' ref={blogFormRef}>
-              <NewBlog createBlog={createBlog} />
-            </Togglable>
+      <Switch>
+        <Route path="/blogs/:id">
+          <Blog blog={blog} />
+        </Route>
+        <Route path="/users/:id">
+          <User user={matchUser} />
+        </Route>
+        <Route path="/users">
+          <Users />
+        </Route>
+        <Route path="/">
+          <Togglable buttonLabel='create new blog' ref={blogFormRef}>
+            <NewBlog createBlog={createBlog} />
+          </Togglable>
 
-            {blogs.sort(byLikes).map(blog =>
-              <Blogs
-                key={blog.id}
-                blog={blog}
-              />
-            )}
-          </Route>
-        </Switch>
+          {blogs.sort(byLikes).map(blog =>
+            <Blogs
+              key={blog.id}
+              blog={blog}
+            />
+          )}
+        </Route>
+      </Switch>
     </div>
   )
 }

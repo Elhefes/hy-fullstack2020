@@ -14,12 +14,6 @@ const Users = () => {
         return null
     }
 
-    console.log(' ')
-    console.log('täs1')
-    console.log(users)
-    console.log('täs2')
-    console.log(' ')
-
     return (
         <div>
     <h2>Users</h2>

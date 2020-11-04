@@ -8,63 +8,60 @@ import {
 } from "react-router-dom"
 
 
-const Blog = ({ blog }) => {
-    const blogs = useSelector(state => state.blogs.sort((a, b) => b.likes - a.likes))
-  if (!blog) {
-    return null
-  }
+const Blog = (blog) => {
+  const dispatch = useDispatch()
+  const blogs = useSelector(state => state.blogs.sort((a, b) => b.likes - a.likes))
 
-  const handleLike = (id) => {
+  const handleLike = (blog) => {
+    console.log(blog)
     try {
-      const blogToLike = blogs.find(b => b.id === id)
-      likeBlog(blogToLike)
+      dispatch(likeBlog(blog))
     } catch (exception) {
       console.log(exception)
     }
   }
 
+  console.log(' ')
+  console.log('täs1')
+  console.log(blog.blog)
+  console.log('täs2')
+  console.log(' ')
+
   const handleRemove = async (id) => {
     removeBlog(id)
   }
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
+  if (!blog.blog) { return null }
+
+  const link = `${blog.blog.url}`
 
   return (
-    <div>
-      wup
+    <div class = "container">
+      <h2>{blog.blog.title} {blog.blog.author}</h2>
+      <a target="_blank"
+        href={blog.blog.url}>{blog.blog.url}</a>
+      <p>{blog.blog.likes} likes
+      <button onClick={() => handleLike(blog.blog)}>like</button>
+      </p>
+      <div>
+        added by {blog.blog.user.name}
+      </div>
     </div>
   )
 }
 
-Blog.propTypes = {
-  blog: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    author: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
-  }).isRequired,
-  handleLike: PropTypes.func.isRequired,
-  handleRemove: PropTypes.func.isRequired,
-  own: PropTypes.bool.isRequired
+const mapStateToProps = (state) => {
+  return {
+    notification: state.notification,
+    blogs: state.blogs
+  }
 }
 
-const mapStateToProps = (state) => {
-    return {
-      notification: state.notification,
-      blogs: state.blogs
-    }
-  }
-  
-  const mapDispatchToProps = {
-    initializeBlogs,
-    createBlog,
-    likeBlog,
-    removeBlog
-  }
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(Blog)
+const mapDispatchToProps = {
+  initializeBlogs,
+  createBlog,
+  likeBlog,
+  removeBlog
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Blog)
