@@ -8,7 +8,7 @@ import {
 } from "react-router-dom"
 
 
-const Blog = ({ blog, own }) => {
+const Blog = ({ blog }) => {
     const blogs = useSelector(state => state.blogs.sort((a, b) => b.likes - a.likes))
   if (!blog) {
     return null
@@ -36,7 +36,7 @@ const Blog = ({ blog, own }) => {
   }
 
   return (
-    <div style={blogStyle} className='blog'>
+    <div>
       wup
     </div>
   )

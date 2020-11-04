@@ -118,17 +118,14 @@ const App = (props) => {
 
   return (
     <div>
-      <h2>blogs</h2>
-
-      <Notification />
-
-      <p>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
-      </p>
-        <div>
+      <div>
           <Link style={{ padding: 5 }} to="/">blogs</Link>
           <Link style={{ padding: 5 }} to="/users">users</Link>
+          {user.name} logged in <button onClick={handleLogout}>logout</button>
         </div>
+      <h2>blog app</h2>
+
+      <Notification />
         <Switch>
           <Route path="/blogs/:id">
             <Blog blog = {blog}/>
