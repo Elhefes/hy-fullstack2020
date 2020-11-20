@@ -16,11 +16,11 @@ let authors = [
     id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
     born: 1821
   },
-  { 
+  {
     name: 'Joshua Kerievsky', // birthyear not known
     id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
   },
-  { 
+  {
     name: 'Sandi Metz', // birthyear not known
     id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
   },
@@ -59,7 +59,7 @@ let books = [
     author: 'Joshua Kerievsky',
     id: "afa5de01-344d-11e9-a414-719c6709cf3e",
     genres: ['refactoring', 'patterns']
-  },  
+  },
   {
     title: 'Practical Object-Oriented Design, An Agile Primer Using Ruby',
     published: 2012,
@@ -87,7 +87,7 @@ const typeDefs = gql`
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks(author: String): [Book!]!
+    allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
   }
   type Book {
@@ -108,8 +108,15 @@ const resolvers = {
     bookCount: () => books.length,
     authorCount: () => authors.length,
     allBooks: (root, args) => {
-      if (!args.author) return books
-      return books.filter(b => b.author === args.author)
+      if (!args.author && !args.genre) {
+        return books
+      } else if (!args.author && args.genre) {
+        return books.filter(b => b.genres.includes(args.genre))
+      } else if (args.author && !args.genre) {
+        return books.filter(b => b.author === args.author)
+      } else {
+        return books.filter(b => b.author === args.author).filter(b => b.genres.includes(args.genre))
+      }
     },
     allAuthors: () => authors
   },
