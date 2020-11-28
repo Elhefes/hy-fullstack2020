@@ -17,7 +17,7 @@ const Authors = (props) => {
   const [name, setName] = useState('')
   const [born, setBorn] = useState('')
 
-  const [ updateAuthor ] = useMutation(EDIT_AUTHOR)
+  const [updateAuthor] = useMutation(EDIT_AUTHOR)
 
   if (!props.show) {
     return null
@@ -26,7 +26,7 @@ const Authors = (props) => {
 
   const update = async (event) => {
     event.preventDefault()
-    updateAuthor({ variables: { name, setBornTo: Number(born) }})
+    updateAuthor({ variables: { name, setBornTo: Number(born) } })
 
     setName('')
     setBorn('')
@@ -60,11 +60,15 @@ const Authors = (props) => {
         <form onSubmit={update}>
           <div>
             name
-          <input
-              value={name}
-              type='text'
-              onChange={({ target }) => setName(target.value)}
-            />
+            <select value={name} onChange={({ target }) => setName(target.value)}>
+              {authors.map(a =>
+                <option
+                  value={a.name}
+                  key={a.id}>
+                  {a.name}
+                </option>
+              )}
+            </select>
           </div>
           <div>
             born
