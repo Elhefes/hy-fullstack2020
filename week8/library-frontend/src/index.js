@@ -11,14 +11,6 @@ const client = new ApolloClient({
   })
 })
 
-const query = gql`
-  query {
-    allBooks  {
-      title
-    }
-  }
-`
-
 ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
