@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { gql, useQuery, useApolloClient } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
+import Recommend from './components/Recommend'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 
@@ -32,8 +33,10 @@ const ALL_BOOKS = gql`
 const App = () => {
   const [token, setToken] = useState(null)
   const [error, setError] = useState(null)
+  const [recommend, setRecommend] = useState(null)
   const [page, setPage] = useState('authors')
   const client = useApolloClient()
+
   const authorResult = useQuery(ALL_AUTHORS, {
     pollInterval: 2000
   })
@@ -63,6 +66,7 @@ const App = () => {
         {token &&
           <>
             <button onClick={() => setPage('add')}>add book</button>
+            <button onClick={() => setPage('recommend')}>recommend</button>
             <button onClick={() => logout()}>logout</button>
           </>
         }
@@ -83,6 +87,13 @@ const App = () => {
       <Books
         show={page === 'books'}
         books={bookResult.data.allBooks}
+        recommend={recommend}
+      />
+
+      <Recommend
+        show={page === 'recommend'}
+        books={bookResult.data.allBooks}
+        recommend={recommend}
       />
 
       <NewBook

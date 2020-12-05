@@ -74,10 +74,7 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: (root, args) => {
-      console.log('wup')
-      console.log(Book.find({}))
       if (!args.author && !args.genre) {
-        console.log('tänne')
         return Book.find({}).populate('author')
       } else if (!args.author && args.genre) {
         return Book.find({ genres: args.genre })
@@ -88,7 +85,11 @@ const resolvers = {
       }
     },
     allAuthors: () => Author.find({}),
-    me: (root, args, context) => context.currentUser
+    me: (root, args, context) => {
+      console.log('current user:')
+      console.log(context.currentUser.username)
+      return context.currentUser
+    }
   },
   Author: {
     bookCount: (root) => Book.find({ author: root.id }).countDocuments()
@@ -143,7 +144,7 @@ const resolvers = {
       return null
     },
     createUser: (root, args) => {
-      const user = new User({ username: args.username })
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
   
       return user.save()
         .catch(error => {
@@ -178,8 +179,7 @@ const server = new ApolloServer({
       const decodedToken = jwt.verify(
         auth.substring(7), JWT_SECRET
       )
-      const currentUser = await User
-        .findById(decodedToken.id)
+      const currentUser = await User.findById(decodedToken.id)
       return { currentUser }
     }
   }
