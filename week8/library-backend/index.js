@@ -136,8 +136,10 @@ const resolvers = {
           invalidArgs: args,
         })
       }
-      pubsub.publish('BOOK_ADDED', { bookAdded: book })
-      return Book.findById(book._id).populate('author')
+      const newBook = await Book.findOne({ title: args.title }).populate('author')
+      const bookJSON = await newBook.toJSON()
+      await pubsub.publish('BOOK_ADDED', { bookAdded: bookJSON })
+      return bookJSON
     },
     editAuthor: async (root, args, context) => {
       if (!context.currentUser) {

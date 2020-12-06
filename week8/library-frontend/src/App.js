@@ -1,41 +1,38 @@
 import React, { useState } from 'react'
-import { gql, useQuery, useApolloClient } from '@apollo/client'
+import { useQuery, useSubscription, useApolloClient } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import Recommend from './components/Recommend'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
-
-const ALL_AUTHORS = gql`
-  query {
-    allAuthors {
-      name
-      born
-      bookCount
-    }
-  }
-`
-
-const ALL_BOOKS = gql`
-  query {
-    allBooks {
-      title
-      published
-      genres
-      id
-      author {
-        name
-      }
-    }
-  }
-`
+import { BOOK_ADDED, ALL_BOOKS, ALL_AUTHORS } from './queries'
 
 const App = () => {
   const [token, setToken] = useState(null)
   const [error, setError] = useState(null)
-  const [recommend, setRecommend] = useState(null)
   const [page, setPage] = useState('authors')
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      const addedBook = subscriptionData.data.bookAdded
+      window.alert(`${addedBook.title} added`)
+      updateCacheWith(addedBook)
+    }
+  })
+
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) => 
+      set.map(p => p.id).includes(object.id)  
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks : dataInStore.allBooks.concat(addedBook) }
+      })
+    }   
+  }
 
   const authorResult = useQuery(ALL_AUTHORS, {
     pollInterval: 2000
@@ -87,13 +84,11 @@ const App = () => {
       <Books
         show={page === 'books'}
         books={bookResult.data.allBooks}
-        recommend={recommend}
       />
 
       <Recommend
         show={page === 'recommend'}
         books={bookResult.data.allBooks}
-        recommend={recommend}
       />
 
       <NewBook

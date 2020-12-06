@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { gql, useQuery } from '@apollo/client'
-
-const ME = gql`
-  query {
-    me {
-      username
-      favoriteGenre
-    }
-  }
-`
+import { useQuery } from '@apollo/client'
+import { ME } from './../queries'
 
 const Recommend = (props) => {
   const [currentUser, setCurrentUser] = useState(null)
