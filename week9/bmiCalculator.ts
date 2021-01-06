@@ -8,7 +8,7 @@ const calculateBmi = (height: number, weight: number): string => {
   if (bmi >= 25 && bmi < 30) return 'Overweight'
   if (bmi >= 30 && bmi < 35) return 'Obese Class I (Moderately obese)'
   if (bmi >= 35 && bmi < 40) return 'Obese Class II (Severely obese)'
-  if (bmi >= 40) return 'Obese Class III (Very severely obese)'
+  return 'Obese Class III (Very severely obese)'
 }
 
 interface arguments {
@@ -35,3 +35,5 @@ try {
 } catch (error) {
   console.log(error)
 }
+
+export { calculateBmi }
