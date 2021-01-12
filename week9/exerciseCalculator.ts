@@ -68,3 +68,5 @@ try {
 } catch (error) {
   console.log(error);
 }
+
+export { exerciseCalculator }
