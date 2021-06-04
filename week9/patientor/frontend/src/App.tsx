@@ -6,6 +6,7 @@ import { Button, Divider, Header, Container } from "semantic-ui-react";
 import { apiBaseUrl } from "./constants";
 import { useStateValue } from "./state";
 import { Patient } from "./types";
+import PatientList from "./PatientList";
 
 import PatientListPage from "./PatientListPage";
 
@@ -37,6 +38,7 @@ const App: React.FC = () => {
           </Button>
           <Divider hidden />
           <Switch>
+          <Route path="/patients/:id" render={() => <PatientList/>} />
             <Route path="/" render={() => <PatientListPage />} />
           </Switch>
         </Container>

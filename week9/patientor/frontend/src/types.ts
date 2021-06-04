@@ -15,6 +15,7 @@ export interface Patient {
   name: string;
   occupation: string;
   gender: Gender;
+  entries?: Array<string>;
   ssn?: string;
   dateOfBirth?: string;
 }
