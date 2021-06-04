@@ -3,7 +3,7 @@ import { apiBaseUrl } from "../constants";
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { Patient } from "../types";
-import { useStateValue } from "../state";
+import { useStateValue, setPatient } from "../state";
 
 const PatientList: React.FC = () => {
   const { id } = useParams< {id: string} >();
@@ -17,10 +17,7 @@ const PatientList: React.FC = () => {
         `${apiBaseUrl}/patients/${id}`
       );
       console.log(fetchedPatient)
-      dispatch({
-        type: "UPDATE_PATIENT",
-        payload: fetchedPatient
-      });
+      dispatch(setPatient(fetchedPatient));
     }
 
     if (patients[id] === undefined) return;
