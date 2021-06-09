@@ -22,4 +22,26 @@ router.post('/', (req, res) => {
   res.json(patient);
 })
 
+router.post('/:id/entries', (req, res) => {
+  switch (req.body.type) {
+    case 'HealthCheck':
+      if (!req.body.healthCheckRating) {
+        res.status(400).json({error: 'Entry healthCheckRating not found.'}).end();
+      }
+      break;
+    case 'OccupationalHealthcare':
+      if (!req.body.employerName) {
+        res.status(400).json({error: 'Entry employer name not found.'}).end();
+      }
+      break;
+    default:
+      res.status(400).json({error: 'Unsupported entry type'}).end();
+      break;
+  }
+
+  const entry = patientService.addEntry(req.body, req.params.id);
+  res.json(entry);
+})
+
+
 export default router;
