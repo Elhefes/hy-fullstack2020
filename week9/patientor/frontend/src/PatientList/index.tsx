@@ -3,7 +3,8 @@ import { apiBaseUrl } from "../constants";
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useStateValue, setPatient } from "../state";
-import { Diagnosis } from "../types";
+import { Diagnosis, Entry } from "../types";
+import { Icon, SemanticCOLORS } from 'semantic-ui-react';
 
 const PatientList: React.FC = () => {
   const { id } = useParams<{id: string}>()
@@ -29,12 +30,6 @@ const PatientList: React.FC = () => {
     }
   }, [])
 
-  const getDiagnosisDescription = (code: string): string => {
-    if (!diagnosesCodes) return '';
-    const diagnosis = diagnosesCodes.find(d => d.code === code);
-    return '' + diagnosis?.name
-  }
-
   if (patients[id]) {
     return (
       <div>
@@ -42,24 +37,55 @@ const PatientList: React.FC = () => {
         <h4>ssn: {patients[id].ssn}</h4>
         <h4>occupation: {patients[id].occupation}</h4>
         <h3>Entries</h3>
-  
         {patients[id].entries?.map(entry => (
           <div>
-            <p>{entry.date} {entry.description}</p>
-            <ul>
-              {entry.diagnosisCodes &&
-               <ul>
-               {entry.diagnosisCodes.map((code) => (
-                 <li key={code}>{code} {getDiagnosisDescription(code)}</li>
-               ))}
-             </ul>}
-            </ul>
+            <EntryDetails key={entry.id} entry={entry}/>
           </div>
         ))}
       </div>
     )
   } else {
     return null
+  }
+}
+
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
+const EntryDetails: React.FC<{ entry: Entry }> = ({ entry }) => {
+  switch (entry.type) {
+    case 'Hospital':
+      return (
+        <div>
+          <h3>{entry.date} <Icon name="doctor" size="big"/></h3>
+          <p>{entry.description}</p>
+        </div>
+      );
+    case 'OccupationalHealthcare':
+      return (
+        <div>
+          <h3>{entry.date} <Icon name="stethoscope" size="big"/></h3>
+          <p>{entry.description}</p>
+        </div>
+      );
+    case 'HealthCheck':
+      const color = entry.healthCheckRating == 0 ? "green" : "yellow"
+      return (
+        <div>
+          <h3>{entry.date} <Icon name="doctor" size="big"/></h3>
+          <p>{entry.description}</p>
+          <Icon
+            name="heart"
+            size="large"
+            color={color}
+          />
+        </div>
+      );
+    default:
+      return assertNever(entry);
   }
 }
 
